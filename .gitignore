@@ -1,0 +1,10 @@
+/.tmp
+/achievement
+/bin
+/debug
+/dist
+depot.json
+operbox.json
+maan.config.json
+maa
+*.log

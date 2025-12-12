@@ -1,0 +1,77 @@
+{
+  "$schema": "https://raw.githubusercontent.com/neutralinojs/neutralinojs/main/schemas/neutralino.config.schema.json",
+  "applicationId": "maa.maan",
+  "version": "0.0.1",
+  "defaultMode": "window",
+  "port": 0,
+  "documentRoot": "/resources/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": false,
+    "writeToLogFile": false
+  },
+  "nativeAllowList": [
+    "app.*",
+    "clipboard.*",
+    "filesystem.createDirectory",
+    "filesystem.remove",
+    "filesystem.writeFile",
+    "filesystem.readFile",
+    "filesystem.readBinaryFile",
+    "filesystem.readDirectory",
+    "os.execCommand",
+    "os.spawnProcess",
+    "os.updateSpawnProcess",
+    "os.getSpawnedProcesses",
+    "os.showOpenDialog",
+    "os.showSaveDialog",
+    "os.showFolderDialog",
+    "os.showNotification",
+    "os.showMessageBox",
+    "os.setTray",
+    "os.open",
+    "window.*",
+    "debug.log"
+  ],
+  "dataLocation": "app",
+  "storageLocation": "app",
+  "modes": {
+    "window": {
+      "title": "MaaN",
+      "width": 800,
+      "height": 560,
+      "minWidth": 800,
+      "minHeight": 560,
+      "center": true,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/resources/icons/app.png",
+      "enableInspector": false,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "resizable": true,
+      "exitProcessOnClose": false,
+      "useSavedState": false,
+      "transparent": true
+    },
+    "browser": {},
+    "chrome": {
+      "width": 800,
+      "height": 560
+    }
+  },
+  "cli": {
+    "binaryName": "MaaN",
+    "resourcesPath": "/resources/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/resources/js/neutralino.js",
+    "binaryVersion": "6.4.0",
+    "clientVersion": "6.4.0"
+  },
+  "applicationName": "MaaN",
+  "applicationIcon": "./resources/icons/app.png"
+}

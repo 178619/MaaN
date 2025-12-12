@@ -1,0 +1,1142 @@
+body {
+    --accent-color: #FF0000;
+    --text-color: #000000;
+    --sub-color: #7F7F7F;
+    --border-color: rgba(0, 0, 0, 0.375);
+    --background-color: #FFFFFF;
+    --background-sub-color: rgba(127, 127, 127, 0.25);
+    --background-alpha: rgba(255, 255, 255, 0.5);
+    --error-color: #FF0000;
+    --warn-color: #FF7F00;
+    --info-color: #005F00;
+    --rarity-6-background: linear-gradient(90deg in hsl shorter hue, #FF7F00, #BFDF00);
+    --rarity-5-background: #FFFFBF;
+    --rarity-4-background: #DFDFFF;
+    --rarity-3-background: #7FDFFF;
+    --rarity-2-background: #FFFF7F;
+    --rarity-1-background: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.light) {
+        --text-color: #DFDFDF;
+        --sub-color: #9F9F9F;
+        --border-color: rgba(223, 223, 223, 0.5);
+        --background-color: #1F1F1F;
+        --background-alpha: rgba(31, 31, 31, 0.5);
+        --info-color: #00BF00;
+        --rarity-6-background: linear-gradient(90deg in hsl shorter hue, #3F1F00, #2F3F00);
+        --rarity-5-background: #3F3F2F;
+        --rarity-4-background: #2F2F3F;
+        --rarity-3-background: #002F3F;
+        --rarity-2-background: #3F3F0F;
+        --rarity-1-background: #3F3F3F;
+    }
+    body:not(.light).amoled_display {
+        --border-color: rgba(223, 223, 223, 0.375);
+        --background-color: #000000;
+        --background-alpha: rgba(0, 0, 0, 0.25);
+        --rarity-1-background: #1F1F1F;
+    }
+}
+
+body.dark {
+    --text-color: #DFDFDF;
+    --sub-color: #9F9F9F;
+    --border-color: rgba(223, 223, 223, 0.5);
+    --background-color: #1F1F1F;
+    --background-alpha: rgba(31, 31, 31, 0.5);
+    --info-color: #00BF00;
+    --rarity-6-background: linear-gradient(90deg in hsl shorter hue, #3F1F00, #2F3F00);
+    --rarity-5-background: #3F3F2F;
+    --rarity-4-background: #2F2F3F;
+    --rarity-3-background: #002F3F;
+    --rarity-2-background: #3F3F0F;
+    --rarity-1-background: #3F3F3F;
+}
+
+body.dark.amoled_display {
+    --border-color: rgba(223, 223, 223, 0.375);
+    --background-color: #000000;
+    --background-alpha: rgba(0, 0, 0, 0.5);
+    --rarity-1-background: #1F1F1F;
+}
+
+html, body {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    color: var(--text-color);
+    font-size: 12px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    border-radius: 0;
+}
+
+body:has(#_Title) {
+    border: 1px solid #3F3F3F;
+}
+
+body:not(.transparent) {
+    background-color: var(--background-color);
+}
+
+* {
+    box-sizing: border-box;
+    border-radius: 4px;
+    color: inherit;
+    font-size: inherit;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-color) transparent;
+    accent-color: var(--accent-color);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+div, li, label {
+    display: flex;
+    min-height: 0;
+    white-space: pre-wrap;
+}
+
+a {
+    cursor: pointer;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    border: 1px solid var(--border-color);
+    background: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+button:active {
+    opacity: 0.75;
+}
+
+button[disabled] {
+    opacity: 1;
+    color: var(--sub-color);
+    background-color: var(--background-sub-color);
+}
+
+input[type="text"], input[type="number"], input[type="time"] {
+    color: var(--text-color);
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    padding: 6px 8px;
+    margin-top: 2px;
+    font-family: inherit;
+}
+
+input[type="text"]:not(:read-only):focus, input[type="number"]:not(:read-only):focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+input[type="number"] {
+    appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+button:hover, input:hover {
+    border-color: var(--accent-color);
+}
+
+progress {
+    background-color: var(--background-sub-color);
+    border: 1px solid var(--border-color);
+}
+
+progress::-webkit-progress-bar {
+    background-color: var(--background-sub-color);
+}
+
+progress::-webkit-progress-value {
+    background-color: var(--accent-color);
+}
+
+progress::-moz-progress-bar {
+    background-color: var(--accent-color);
+}
+
+.config {
+    margin: 2px 0;
+    flex-direction: column;
+    width: 240px;
+}
+
+.config.horizontal {
+    flex-direction: row;
+}
+
+.config.horizontal > * {
+    flex: 1;
+    min-width: 0;
+    max-width: 50%;
+    align-items: center;
+}
+
+.config div {
+    padding: 2px 4px;
+}
+
+.config:has(> input[type="checkbox"]) {
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    margin: 6px 0;
+}
+
+.config .file {
+    display: flex;
+    padding: 0;
+    align-items: flex-end;
+    margin-top: 2px;
+}
+
+.config .file input {
+    flex: 1;
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+    margin: 0;
+    min-width: 0;
+}
+
+.config .file button {
+    padding: 6px 8px;
+    border-radius: 0 4px 4px 0;
+    height: 100%;
+}
+
+.config .file:has(input:hover, input:focus) button {
+    border-left-color: var(--accent-color);
+}
+
+.config .dropdown {
+    cursor: pointer;
+}
+
+.config:has(> ul) {
+    position: relative;
+}
+
+.config:has(> ul) .dropdown {
+    padding-right: 28px;
+    background-image: url(./images/light/dropdown.svg);
+    background-position-x: calc(100% - 6px);
+    background-position-y: center;
+    background-size: 18px;
+    background-clip: padding-box;
+    background-repeat: no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.light) .config:has(> ul) .dropdown {
+        background-image: url(./images/dark/dropdown.svg);
+    }
+}
+
+body.dark .config:has(> ul) .dropdown {
+    background-image: url(./images/dark/dropdown.svg);
+}
+
+.config > ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 100%;
+    background-color: var(--background-color);
+    flex-direction: column;
+    z-index: 1;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+body.transparent .config > ul {
+    background-color: var(--background-alpha);
+    backdrop-filter: blur(4px);
+}
+
+.config.horizontal > ul {
+    width: 50%;
+}
+
+.config > ul > li {
+    color: var(--text-color);
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+.config > ul > li.selected {
+    color: var(--accent-color);
+}
+
+.config > ul > li:hover {
+    background-color: var(--background-sub-color);
+}
+
+.config > ul > li:active {
+    opacity: 0.75;
+}
+
+div .config:has(:focus, li:active) > .dropdown {
+    outline: none;
+    border-color: var(--accent-color);
+    border-radius: 4px 4px 0 0;
+    background-image: url(./images/active/dropdown.svg);
+}
+
+.config:has(:focus, li:active) > ul {
+    display: flex;
+    border-color: var(--accent-color);
+}
+
+.config:has(> ol) {
+    width: auto;
+    flex-direction: column;
+}
+
+.config:has(> ol) > div {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.config > ol {
+    flex-direction: row;
+    border: 1px solid var(--border-color);
+}
+
+.config > ol > li {
+    align-items: center;
+    margin: 2px;
+    padding: 4px;
+}
+
+.config > ol > li:hover {
+    background-color: var(--background-sub-color);
+}
+
+.config > ol > li > button:last-child {
+    margin: 0 4px;
+}
+
+.config > ol .config {
+    width: auto;
+    margin: 0 4px;
+}
+
+.config > ol .config:not(.horizontal):not(:has(input[type="checkbox"])) > div {
+    display: none;
+}
+
+ul, ol {
+    margin: 0;
+    padding: 0;
+}
+
+hr {
+    width: 100%;
+    margin: 2px 0 4px;
+    padding: 0;
+    color: var(--border-color);
+}
+
+body > div {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    flex: 1;
+    border-radius: 0;
+}
+
+#_Title {
+    flex-direction: row;
+    height: 28px;
+    align-items: center;
+    background-image: url(/icons/tray.png);
+    background-size: 24px;
+    background-position: 2px 2px;
+    background-repeat: no-repeat;
+}
+
+#_Title * {
+    border-radius: 0;
+}
+
+#_Title > div {
+    display: flex;
+    flex: unset;
+    padding: 0;
+    height: 100%;
+    align-items: center;
+}
+
+#_Title > div:first-child {
+    flex: 1;
+    padding-left: 32px;
+}
+
+#_Title button {
+    height: 100%;
+    width: 48px;
+    background-size: 24px;
+    background-position: 2px 12px;
+    background-repeat: no-repeat;
+    padding: 2px 12px;
+    border: none;
+    cursor: auto;
+}
+
+#_Title button {
+    height: 100%;
+    width: 48px;
+    background-size: 24px;
+    background-position: 12px 2px;
+    background-repeat: no-repeat;
+    padding: 2px 12px;
+    border: none;
+    z-index: 21;
+}
+
+#_Title button:hover {
+    background-color: var(--background-sub-color);
+}
+
+#_Title #TitleBarButtonPin {
+    background-image: url(./images/light/pin.svg);
+}
+
+#_Title #TitleBarButtonMinimize {
+    background-image: url(./images/light/minimize.svg);
+}
+
+#_Title #TitleBarButtonMaximize {
+    background-image: url(./images/light/maximize.svg);
+}
+
+#_Title #TitleBarButtonClose {
+    background-image: url(./images/light/close.svg);
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.light) #_Title #TitleBarButtonPin {
+        background-image: url(./images/dark/pin.svg);
+    }
+
+    body:not(.light) #_Title #TitleBarButtonMinimize {
+        background-image: url(./images/dark/minimize.svg);
+    }
+
+    body:not(.light) #_Title #TitleBarButtonMaximize {
+        background-image: url(./images/dark/maximize.svg);
+    }
+
+    body:not(.light) #_Title #TitleBarButtonClose {
+        background-image: url(./images/dark/close.svg);
+    }
+}
+
+body.dark #_Title #TitleBarButtonPin {
+    background-image: url(./images/dark/pin.svg);
+}
+
+body.dark #_Title #TitleBarButtonMinimize {
+    background-image: url(./images/dark/minimize.svg);
+}
+
+body.dark #_Title #TitleBarButtonMaximize {
+    background-image: url(./images/dark/maximize.svg);
+}
+
+body.dark #_Title #TitleBarButtonClose {
+    background-image: url(./images/dark/close.svg);
+}
+
+#_Title #TitleBarButtonClose:hover {
+    background-color: var(--error-color);
+}
+
+body:has(#_Title) #_Main {
+    height: calc(100% - 28px);
+}
+
+nav {
+    flex-direction: row;
+}
+
+nav > button {
+    flex: 1;
+    background: none;
+    border: 2px solid transparent;
+}
+
+nav > button:hover, nav > button.selected {
+    color: var(--accent-color);
+    border: 2px solid transparent;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+body > div > div {
+    flex: 1;
+    padding: 16px;
+    display: none;
+}
+
+body > div > div.current {
+    display: flex;
+}
+
+#TopMenu {
+    display: flex;
+    /* z-index: 11; */
+}
+
+#FarmingScreen > div {
+    flex-direction: column;
+    margin: 0 16px;
+}
+
+#FarmingScreen > div:last-child {
+    flex: 1;
+    min-width: auto;
+}
+
+#FarmingScreenMainBox {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    flex-direction: column;
+    flex: 1;
+    min-width: 200px;
+}
+
+#FarmingScreenMainBoxList {
+    flex-direction: column;
+    flex: 1;
+}
+
+#FarmingScreenMainBoxList li {
+    margin: 2px;
+    padding: 2px;
+    align-items: center;
+    cursor: pointer;
+}
+
+#FarmingScreenMainBoxList li:hover {
+    background-color: var(--background-sub-color);
+}
+
+#FarmingScreenMainBoxList li:active:not(:has(button:active)) {
+    opacity: 0.75;
+}
+
+#FarmingScreenMainBoxList li > div {
+    margin: 0 4px;
+    flex: 1;
+}
+
+#FarmingScreenMainBoxList li > button {
+    background-image: url(./images/light/config.svg);
+    width: 18px;
+    height: 18px;
+    background-size: 18px;
+    box-sizing: content-box;
+    padding: 3px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    transition: transform 500ms;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.light) #FarmingScreenMainBoxList li > button {
+        background-image: url(./images/dark/config.svg);
+    }
+}
+
+body.dark #FarmingScreenMainBoxList li > button {
+    background-image: url(./images/dark/config.svg);
+}
+
+body #FarmingScreenMainBoxList li > button:hover, body #FarmingScreenMainBoxList li.selected > button {
+    background-image: url(./images/active/config.svg);
+    transform: rotate(60deg);
+}
+
+#FarmingScreenMainBoxButtons > button {
+    flex: 1;
+    margin: 0 4px;
+}
+
+#FarmingScreenMainAfter {
+    font-size: 11px;
+    margin: 16px 0;
+    align-items: center;
+    max-width: 200px;
+    text-align: center;
+}
+
+#FarmingScreenMainAfterInfo {
+    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    margin: 0 16px;
+}
+
+#FarmingScreenMainAfterButton {
+    background-image: url(./images/light/config.svg);
+    width: 18px;
+    height: 18px;
+    background-size: 18px;
+    box-sizing: content-box;
+    padding: 3px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    transition: transform 500ms;
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not(.light) #FarmingScreenMainAfterButton {
+        background-image: url(./images/dark/config.svg);
+    }
+}
+
+body.dark #FarmingScreenMainAfterButton {
+    background-image: url(./images/dark/config.svg);
+}
+
+body #FarmingScreenMainAfterButton:hover, body #FarmingScreenMainAfterButton.selected {
+    background-image: url(./images/active/config.svg);
+    transform: rotate(60deg);
+}
+
+.startbutton {
+    margin: 8px auto;
+    padding: 12px 24px;
+    line-height: 1lh;
+}
+
+#FarmingScreenInfo {
+    width: 250px;
+}
+
+#FarmingScreenInfoConfig {
+    flex: 1;
+    padding-right: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#FarmingScreenInfoConfig > div {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+}
+
+#FarmingScreenInfoConfig > div.current {
+    display: flex;
+}
+
+#FarmingScreenInfoConfig > div * {
+    min-height: auto;
+}
+
+#FarmingScreenInfoChoose {
+    margin: 4px 0;
+    margin-right: 10px;
+}
+
+#FarmingScreenInfoChoose > button {
+    flex: 1;
+}
+
+#FarmingScreenInfoChoose > button.selected {
+    border-color: var(--accent-color);
+}
+
+#FarmingScreenInfoChooseBasic {
+    border-radius: 4px 0 0 4px;
+}
+
+#FarmingScreenInfoChooseExtra {
+    border-radius: 0 4px 4px 0;
+}
+
+#FarmingScreenInfoText {
+    font-size: 11px;
+    min-height: 5lh;
+    max-height: 8lh;
+    overflow-y: auto;
+    margin: 4px 16px;
+}
+
+#FarmingScreenLogs, #CopilotScreenLogs {
+    flex-direction: column;
+    overflow-y: auto;
+    font-size: 11px;
+    line-height: 1lh;
+}
+
+#FarmingScreenLogs *, #CopilotScreenLogs * {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+#FarmingScreenLogs > div, #CopilotScreenLogs > div {
+    min-height: auto;
+}
+
+#FarmingScreenLogs > div:not(:first-child), #CopilotScreenLogs > div:not(:first-child) {
+    margin-top: 4px;
+}
+
+#FarmingScreenLogs > div > span, #CopilotScreenLogs > div > span {
+    color: var(--sub-color);
+    margin-right: 8px;
+}
+
+#FarmingScreenLogs > div > div, #CopilotScreenLogs > div > div {
+    flex: 1;
+    white-space: pre-wrap;
+}
+
+#FarmingScreenLogs > div.error > div, #CopilotScreenLogs > div.error > div {
+    color: var(--error-color);
+}
+
+#FarmingScreenLogs > div.warn > div, #CopilotScreenLogs > div.warn > div {
+    color: var(--warn-color);
+}
+
+#FarmingScreenLogs > div.green > div, #CopilotScreenLogs > div.green > div {
+    color: var(--info-color);
+}
+
+#CopilotScreen > div {
+    flex: 1;
+    margin: 0 16px;
+}
+
+#CopilotScreenSelector {
+    flex-direction: column;
+}
+
+#CopilotScreenSelector .config:has(.file) {
+    width: 100%;
+}
+
+#CopilotScreenSelector *:not(nav, .config .file) > button {
+    margin: 8px auto;
+    padding: 12px 24px;
+}
+
+#CopilotScreenSelectorConfig {
+    flex: 1;
+}
+
+#CopilotScreenSelectorConfig > div {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+}
+
+#CopilotScreenSelectorConfig > div.current {
+    display: flex;
+}
+
+#CopilotScreenSelectorConfig > div * {
+    min-height: auto;
+}
+
+#CopilotScreenSelectorConfig > div .config {
+    margin-inline: auto;
+    justify-content: center;
+}
+
+#CopilotScreenSelectorConfig > div .config * {
+    justify-content: center;
+}
+
+#ToolboxScreen {
+    flex-direction: column;
+}
+
+#ToolboxScreenNav {
+    align-self: center;
+}
+
+#ToolboxScreenMain {
+    flex: 1;
+}
+
+#ToolboxScreenMain > div {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+}
+
+#ToolboxScreenMain > div.current {
+    display: flex;
+}
+
+#ToolboxScreenMain *:not(nav, .config .file) > button {
+    margin: 8px auto;
+    padding: 12px 24px;
+}
+
+#ToolboxScreenMainRecruitmentRecognitionResult {
+    flex: 1;
+}
+
+#ToolboxScreenMainRecruitmentRecognitionConfig > div {
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px;
+}
+
+#ToolboxScreenMainRecruitmentRecognitionConfig > div {
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px;
+}
+
+#ToolboxScreenMainRecruitmentRecognitionConfig > div:not(:has(button)) {
+    flex: 1;
+}
+
+#ToolboxScreenMainOperBoxRecognitionMessage {
+    margin: 8px 0 0;
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult {
+    flex: 1;
+    overflow-y: auto;
+    align-items: flex-start;
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div {
+    display: none;
+    flex-wrap: wrap;
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div.current {
+    display: flex;
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div {
+    padding: 8px 12px;
+    margin: 8px;
+    white-space: nowrap;
+    align-self: center;
+    cursor: default;
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_6 {
+    background: var(--rarity-6-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_5 {
+    background: var(--rarity-5-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_4 {
+    background: var(--rarity-4-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_3 {
+    background: var(--rarity-3-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_2 {
+    background: var(--rarity-2-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div.rarity_1 {
+    background: var(--rarity-1-background);
+}
+
+#ToolboxScreenMainOperBoxRecognitionResult > div > div:hover {
+    opacity: 0.75;
+}
+
+#ToolboxScreenMainOperBoxRecognitionStart {
+    justify-content: center;
+}
+
+#ToolboxScreenMainOperBoxRecognitionStart > div {
+    margin-inline: 12px;
+}
+
+#ToolboxScreenMainDepotRecognitionMessage {
+    margin: 8px 0 0;
+}
+
+#ToolboxScreenMainDepotRecognitionResult {
+    flex: 1;
+    overflow-y: auto;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+#ToolboxScreenMainDepotRecognitionResult > div {
+    padding: 8px 12px;
+    margin: 8px;
+    white-space: nowrap;
+    align-self: center;
+    cursor: default;
+    background-color: var(--background-sub-color);
+}
+
+#ToolboxScreenMainDepotRecognitionResult > div:hover {
+    opacity: 0.75;
+}
+
+#ToolboxScreenMainDepotRecognitionStart {
+    width: 75%;
+    margin: 0 auto;
+}
+
+#ToolboxScreenMainDepotRecognitionStart > div {
+    flex: 1;
+}
+
+#SettingsScreenList {
+    margin: 8px;
+    border: 1px solid var(--border-color);
+    flex-direction: column;
+    min-width: 160px;
+    overflow-y: auto;
+}
+
+#SettingsScreenList li {
+    margin: 2px;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+#SettingsScreenList li:hover {
+    background-color: var(--background-sub-color);
+}
+
+#SettingsScreenList li > div {
+    margin: 0 4px;
+    flex: 1;
+}
+
+#SettingsScreenMain {
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    margin: 8px;
+}
+
+#SettingsScreenMain > div {
+    flex-direction: column;
+    min-height: auto;
+}
+
+#SettingsScreenMain > div > div:has(hr) {
+    padding: 8px;
+    align-items: center;
+}
+
+#SettingsScreenMain > div > div > hr {
+    color: var(--border-color)
+}
+
+#SettingsScreenMain > div > div > hr:first-child {
+    width: 24px;
+}
+
+#SettingsScreenMain > div > div:has(hr) > div {
+    margin-inline: 8px;
+}
+
+#SettingsScreenMain > div > div > hr:last-child {
+    flex: 1;
+}
+
+#SettingsScreenMain > div > div:not(:has(hr)) {
+    align-items: center;
+    flex-direction: column;
+}
+
+#SettingsScreenMain .config:not(.horizontal) {
+    text-align: center;
+}
+
+#SettingsScreenMain .config:not(.horizontal) ul {
+    text-align: initial;
+}
+
+#InitScreen {
+    position: fixed;
+    background: transparent;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 0;
+    backdrop-filter: blur(4px);
+    z-index: 31;
+}
+
+body:has(#_Title) #InitScreen {
+    top: 28px;
+    border: 1px solid #3F3F3F;
+    border-top: none;
+}
+
+#InitScreenConfig {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+}
+
+#InitScreenList button {
+    margin: 8px auto;
+    padding: 12px 24px;
+}
+
+#SystemScreen, #SystemScreenMain {
+    position: fixed;
+    background: transparent;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 16;
+}
+
+#SystemScreenMain {
+    margin: auto;
+    width: max-content;
+    height: max-content;
+    padding: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    flex-direction: column;
+    backdrop-filter: blur(4px);
+}
+
+#SystemScreenMainVisual {
+    width: 100%;
+    height: 16px;
+    background-color: var(--background-sub-color);
+    border-radius: 0;
+    margin: 8px 0;
+}
+
+#SystemScreenMainVisualProgress {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    background-color: var(--accent-color);
+}
+
+@keyframes fill-bar {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+#SystemScreenMainButton {
+    justify-content: flex-end;
+}
+
+#SystemScreenMainButton > button {
+    margin: 0 4px;
+}
+
+#_Background {
+    background-color: var(--background-color);
+    border-radius: 0;
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    background-position: center;
+}
+
+.resizer {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+}
+
+#ResizeN {
+    width: 100%;
+    top: 0;
+    cursor: n-resize;
+}
+
+#ResizeE {
+    height: 100%;
+    right: 0;
+    cursor: e-resize;
+}
+
+#ResizeS {
+    width: 100%;
+    bottom: 0;
+    cursor: s-resize;
+}
+
+#ResizeW {
+    height: 100%;
+    left: 0;
+    cursor: w-resize;
+}
+
+#ResizeNE {
+    top: 0;
+    right: 0;
+    cursor: ne-resize;
+}
+
+#ResizeSE {
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+}
+
+#ResizeSW {
+    bottom: 0;
+    left: 0;
+    cursor: sw-resize;
+}
+
+#ResizeNW {
+    left: 0;
+    top: 0;
+    cursor: nw-resize;
+}
