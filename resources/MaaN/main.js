@@ -808,7 +808,7 @@ MaaN.getDateString = (formatString) => {
 }
 
 MaaN.log = (text, level="log", logMode=MaaN.logMode) => {
-    const logContainer = logMode == 'copilot' ? document.getElementById('CopilotScreenLogs') : document.getElementById('FarmingScreenLogs')
+    const logContainer = (logMode == 'copilot' || logMode == 'ssscopilot') ? document.getElementById('CopilotScreenLogs') : document.getElementById('FarmingScreenLogs')
     if (!logContainer) return console.log(text)
     const node = document.createElement('div')
     if (level) node.classList.add(level.toLowerCase())
@@ -825,7 +825,7 @@ MaaN.log = (text, level="log", logMode=MaaN.logMode) => {
 MaaN.clearLogs = (logMode=null) => {
     if (!logMode) document.querySelectorAll('[id$="ScreenLogs"]').forEach(logContainer => logContainer.innerHTML = '')
     if (logMode) {
-        const logContainer = logMode == 'copilot' ? document.getElementById('CopilotScreenLogs') : document.getElementById('FarmingScreenLogs')
+        const logContainer = (logMode == 'copilot' || logMode == 'ssscopilot') ? document.getElementById('CopilotScreenLogs') : document.getElementById('FarmingScreenLogs')
         if (!logContainer) return
         logContainer.innerHTML = ''
     }
@@ -1032,6 +1032,7 @@ MaaN.startTasks = async (taskName=MaaN.defaultTasks) => {
     MaaN.lastRunTime = performance.now()
     switch (taskName) {
         case 'copilot':
+        case 'ssscopilot':
             if (!MaaN.get('config.profile.scripts.on_copilot')) break
         case 'farming':
             if (MaaN.get('config.profile.scripts.pre')) await Neutralino.os.execCommand(MaaN.get('config.profile.scripts.pre'))
@@ -1171,6 +1172,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
                 MaaN.resetTemporalTasks()
                 if (MaaN.get('config.profile.scripts.on_manual_stop')) switch (MaaN.logMode) {
                     case 'copilot':
+                    case 'ssscopilot':
                         if (!MaaN.get('config.profile.scripts.on_copilot')) break
                     case 'farming':
                         if (MaaN.get('config.profile.scripts.post')) await Neutralino.os.execCommand(MaaN.get('config.profile.scripts.post'))
@@ -1201,6 +1203,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
                         document.getElementById('ToolboxScreenMainDepotRecognitionMessage').textContent = MaaN.getText('IdentificationCompleted')
                         break
                     case 'copilot':
+                    case 'ssscopilot':
                         if (!MaaN.get('config.profile.scripts.on_copilot')) break
                     case 'farming':
                         if (MaaN.get('config.profile.scripts.post')) await Neutralino.os.execCommand(MaaN.get('config.profile.scripts.post'))
@@ -1798,6 +1801,7 @@ MaaN.androidActions = {
         const execution = await Neutralino.os.execCommand(MaaN.filePathHandler(MaaN.get('profile.connection.adb_path')) + ' exec-out am start -a android.intent.action.MAIN -c android.intent.category.HOME', {background: true})
     },
     'ExitEmulator': async () => {
+        const emulator_path = MaaN.get('config.profile.startup.emulator_path')
         let execution
         switch (MaaN.profile.connection?.config) {
             case 'Waydroid':
@@ -1820,9 +1824,9 @@ MaaN.systemActions = {
     'Reboot': async () => {
         let execution
         if (NL_OS == "Windows") {
-            execution = await Neutralino.os.execCommand('shutdown /s /t 0')
+            execution = await Neutralino.os.execCommand('shutdown /r /t 0')
         } else {
-            execution = await Neutralino.os.execCommand('poweroff')
+            execution = await Neutralino.os.execCommand('reboot')
         }
     },
     'Sleep': async () => {
@@ -1840,11 +1844,6 @@ MaaN.systemActions = {
             default:
                 execution = await Neutralino.os.execCommand('acpiconf -s 3')
 
-        }
-        if (NL_OS == "Windows") {
-            execution = await Neutralino.os.execCommand('shutdown /r /t 0')
-        } else {
-            execution = await Neutralino.os.execCommand('reboot')
         }
     },
     'Shutdown': async () => {
