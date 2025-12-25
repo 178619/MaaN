@@ -7,6 +7,7 @@
     "CloseDown": "{key=ExitArknights}",
     "CompatMac": "macOS兼容模式",
     "CompatPOSIXShell": "POSIX接口兼容模式",
+    "CustomFont": "自定义字体",
     "ExpiringMedicine": "临期理智药",
     "GlobalScope": "通用设置",
     "LanguageEnUS": "English（英语）",

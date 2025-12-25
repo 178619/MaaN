@@ -7,6 +7,7 @@
     "CloseDown": "{key=ExitArknights}",
     "CompatMac": "macOS 호환 모드",
     "CompatPOSIXShell": "POSIX 셸 호환 모드",
+    "CustomFont": "사용자 정의 글꼴",
     "ExpiringMedicine": "만료가 임박한 회복제",
     "GlobalScope": "전역 설정",
     "LanguageEnUS": "English (영어)",

@@ -75,10 +75,10 @@ const renderers = {
         selector.addEventListener('click', async () => {
             let path = (await Neutralino.os.showOpenDialog(MaaN.getText(data.name), data.path ? {defaultPath: MaaN.paths[data.path]} : undefined))[0]
             if (path === undefined) return
-            if (path.includes(' ')) {
-                if (NL_OS == 'Windows') path = '"' + path.replace(/[^\\]\\$/, '\\\\') + '"'
-                if (NL_OS != 'Windows') path = "'" + path.replaceAll("'", "\\'") + "'"
-            }
+            // if (path.includes(' ')) {
+            //     if (NL_OS == 'Windows') path = '"' + path.replace(/[^\\]\\$/, '\\\\') + '"'
+            //     if (NL_OS != 'Windows') path = "'" + path.replaceAll("'", "\\'") + "'"
+            // }
             MaaN.set(input.name, path)
             MaaN.updateInput(input.name, path)
         })
@@ -234,7 +234,7 @@ const renderers = {
         const textNode = document.createElement('div')
         textNode.textContent = MaaN.getText(data.name)
         const dropdown = document.createElement('input')
-        dropdown.readOnly = true
+        if (!data.editable) dropdown.readOnly = true
         dropdown.type = 'text'
         dropdown.name = data.target.replace('{index}', data.index)
         dropdown.classList.add('dropdown')
@@ -242,6 +242,26 @@ const renderers = {
         const select = document.createElement('ul')
         const config = MaaN.get(dropdown.name)
         const selected = data.options.find((dat) => config === dat || (config === dat.value && (dat.text || dat.name)))
+        dropdown.addEventListener('change', () => {
+            switch (data.preset) {
+                case 'operator':
+                    if (!dropdown.value || dropdown.value !== MaaN.getText('NotSelected')) {
+                        const operatorId = MaaN.getOperatorId(dropdown.value)
+                        dropdown.value = operatorId ? MaaN.getText(operatorId) : ''
+                        MaaN.set(dropdown.name, MaaN.getOperatorName(operatorId) ?? undefined)
+                    } else {
+                        dropdown.value = MaaN.getText('NotSelected')
+                        MaaN.set(dropdown.name, undefined)
+                    }
+                    break
+                case 'stage':
+                    MaaN.set(dropdown.name, (dropdown.value == MaaN.getText('DefaultStage')) ? undefined : dropdown.value)
+                    break
+                default:
+                    MaaN.set(dropdown.name, dropdown.value)
+            }
+            MaaN.updateInput(dropdown.name, dropdown.value)
+        })
         data.options?.forEach((dat) => {
             const name = dat.name ?? dat
             const value = (dat.name || dat.text) ? dat.value : dat
@@ -249,12 +269,32 @@ const renderers = {
             option.textContent = dat.text ?? MaaN.getText(name)
             option.addEventListener('click', () => {
                 MaaN.set(dropdown.name, value)
-                MaaN.updateInput(dropdown.name, option.textContent)
+                switch (data.preset) {
+                    case 'operator':
+                        MaaN.updateInput(dropdown.name, MaaN.getText(MaaN.getOperatorId(value)) ?? MaaN.getText('NotSelected'))
+                        break
+                    case 'stage':
+                        MaaN.updateInput(dropdown.name, value ?? MaaN.getText('DefaultStage'))
+                        break
+                    default:
+                        MaaN.updateInput(dropdown.name, option.textContent)
+                }
             })
-            if (selected == value || selected && selected.value == value) option.classList.add('selected')
+            if (selected == value || selected && !selected.length && selected.value == value) option.classList.add('selected')
             select.append(option)
         })
-        dropdown.value = MaaN.getText(selected?.text ?? selected?.name ?? selected ?? config ?? 'NotSelected')
+        switch (data.preset) {
+            case 'operator':
+                if (!selected || selected.value !== undefined) {
+                    dropdown.value = MaaN.getText(MaaN.getOperatorId(config)) ?? ''
+                } else dropdown.value = MaaN.getText('NotSelected')
+                break
+            case 'stage':
+                dropdown.value = (selected && selected.value === undefined) ? MaaN.getText('DefaultStage') : config
+                break
+            default:
+                dropdown.value = MaaN.getText(selected?.text ?? selected?.name ?? selected ?? config ?? 'NotSelected')
+        }
         node.append(textNode)
         node.append(dropdown)
         node.append(select)
@@ -357,7 +397,7 @@ const renderers = {
     }
 }
 
-MaaN.updateSelects = (nodeName, options) => {
+MaaN.updateSelects = (nodeName, options, preset) => {
     document.querySelectorAll('.config .dropdown[name="' + nodeName + '"] + ul').forEach(select => {
         select.innerHTML = ''
         const config = MaaN.get(nodeName)
@@ -369,9 +409,18 @@ MaaN.updateSelects = (nodeName, options) => {
             option.textContent = dat.text ?? MaaN.getText(name)
             option.addEventListener('click', () => {
                 MaaN.set(nodeName, value)
-                MaaN.updateInput(nodeName, option.textContent)
+                switch (preset) {
+                    case 'operator':
+                        MaaN.updateInput(nodeName, value ?? MaaN.getText('NotSelected'))
+                        break
+                    case 'stage':
+                        MaaN.updateInput(nodeName, value ?? MaaN.getText('DefaultStage'))
+                        break
+                    default:
+                        MaaN.updateInput(nodeName, option.textContent)
+                }
             })
-            if (selected == value || selected && selected.value == value) option.classList.add('selected')
+            if (selected == value || selected && !selected.length && selected.value == value) option.classList.add('selected')
             select.append(option)
         })
     })
@@ -983,7 +1032,9 @@ MaaN.ScreensCat = {
                     type: "select",
                     name: "StageSelect",
                     target: "tasks.farming.Fight.params.stage", 
-                    options: [{name: "DefaultStage", value: undefined}, "1-7", {text: "R8-11", value: "R8-11"}, {text: "12-17-HARD", value: "12-17-HARD"}],
+                    editable: true,
+                    preset: 'stage',
+                    options: [{name: "DefaultStage", value: undefined}, {text: "1-7", value: "1-7"}, {text: "R8-11", value: "R8-11"}, {text: "12-17-HARD", value: "12-17-HARD"}, {name: "AnnihilationMode", value: "Annihilation"}],
                     horizontal: true
                 }
             ],
@@ -1130,9 +1181,12 @@ MaaN.ScreensCat = {
                     options: [{name: "FirstMoveAdvantage", value: "先手必胜"}, {name: "SlowAndSteadyWinsTheRace", value: "稳扎稳打"}, {name: "OvercomingYourWeaknesses", value: "取长补短"}, {name: "FlexibleDeployment", value: "灵活部署"}, {name: "Unbreakable", value: "坚不可摧"}, {name: "AsYourHeartDesires", value: "随心所欲"}]
                 },
                 {
-                    type: "number",
-                    name: "StartTimesLimit",
-                    target: "tasks.farming.Roguelike.params.starts_count"
+                    type: "select",
+                    name: "StartingCoreChar",
+                    target: "tasks.farming.Roguelike.params.core_char",
+                    preset: "operator",
+                    editable: true,
+                    options: [{name: "NotSelected", value: undefined}, {name: "char_1035_wisdel", value: "维什戴尔"}, {name: "char_1020_reed2", value: "焰影苇草"}, {name: "char_003_kalts", value: "凯尔希"}, {name: "char_1026_gvial2", value: "百炼嘉维尔"}, {name: "char_293_thorns", value: "棘刺"}]
                 },
                 {
                     type: "checkbox",
@@ -1145,14 +1199,19 @@ MaaN.ScreensCat = {
         FarmingScreenInfoConfigRoguelikeAdvanced: {
             list: [
                 {
-                    type: "checkbox",
-                    name: "StopOnGoldLimit",
-                    target: "tasks.farming.Roguelike.params.stop_when_investment_full"
+                    type: "number",
+                    name: "StartTimesLimit",
+                    target: "tasks.farming.Roguelike.params.starts_count"
                 },
                 {
                     type: "number",
                     name: "GoldTimesLimit",
                     target: "tasks.farming.Roguelike.params.investments_count"
+                },
+                {
+                    type: "checkbox",
+                    name: "StopOnGoldLimit",
+                    target: "tasks.farming.Roguelike.params.stop_when_investment_full"
                 },
                 {
                     type: "checkbox",
@@ -1950,6 +2009,11 @@ MaaN.ScreensCat = {
                     type: "text",
                     name: "LogItemDateFormatString",
                     target: "config.ui.time_format"
+                },
+                {
+                    type: "text",
+                    name: "CustomFont",
+                    target: "config.ui.font"
                 }
             ],
             renderer: renderers.config

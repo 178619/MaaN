@@ -7,6 +7,7 @@
     "CloseDown": "{key=ExitArknights}",
     "CompatMac": "macOS Compatible Mode",
     "CompatPOSIXShell": "POSIX Shell Compatible Mode",
+    "CustomFont": "Custom Font",
     "ExpiringMedicine": "Expiring Potion",
     "GlobalScope": "Global Settings",
     "LanguageEnUS": "English",

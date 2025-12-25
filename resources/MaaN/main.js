@@ -26,6 +26,10 @@ MaaN.screen = 'Farming'
 MaaN.logMode = null
 
 MaaN.paths = {}
+MaaN.operatorData = {
+    'chars': {},
+    'ranges': {}
+}
 
 MaaN.route = {
     'Farming': [],
@@ -221,7 +225,7 @@ MaaN.tasks = {
                     "report_to_penguin": false,
                     "penguin_id": undefined,
                     "server": undefined,
-                    "client_type": undefined,
+                    "client_type": null,
                     "DrGrandet": false
                 }
             },
@@ -324,7 +328,7 @@ MaaN.tasks = {
                     "enable": false,
                     "theme": "Tales",
                     "mode": 0,
-                    "tools_to_craft": undefined,
+                    "tools_to_craft": ["荧光棒"],
                     "increment_mode": 0,
                     "num_craft_batches": 16
                 }
@@ -530,7 +534,8 @@ MaaN.roguelikeData = {
         "modes": [
             {name: "RoguelikeStrategyExp", value: 0},
             {name: "RoguelikeStrategyGold", value: 1},
-            {name: "RoguelikeStrategyLastReward", value: 4}
+            {name: "RoguelikeStrategyLastReward", value: 4},
+            // {name: "RoguelikeStrategyFindPlaytime", value: 20001}
         ],
         "roles": [
             {name: "FirstMoveAdvantage", value: "先手必胜"},
@@ -603,6 +608,9 @@ MaaN.setBehaviour = {
     },
     "config.ui.background.repeat": () => {
         MaaN.reloadBackgroundStyle()
+    },
+    "config.ui.font": () => {
+        MaaN.reloadFont()
     },
     'config.ui.theme': (value) => {
         document.body.className = value
@@ -712,7 +720,7 @@ MaaN.get = (path) => {
 }
 
 MaaN.updateInput = (path, value) => {
-    document.getElementsByName(path).forEach((input) => {
+    document.getElementsByName(path).forEach(input => {
         switch (input.type) {
             case 'checkbox':
                 input.checked = value
@@ -757,6 +765,16 @@ MaaN.getText = (textId, args=[], kwargs={}) => {
     let text = MaaN.localization[MaaN.config.ui.language][textId]
     if (!text) return 'localization.key.'+textId
     return text.replace(/\{(\d)\}/g, (t, key) => args[parseInt(key)] ?? t).replace(/\{key=(.*?)\}/g, (t, key) => MaaN.getText(key) ?? t).replace(/\{(.*?)\}/g, (t, key) => kwargs[key] ?? t).replaceAll('&#10;', '\n').replaceAll('\\n', '\n').replaceAll('&#160;', ' ')
+}
+
+MaaN.getOperatorId = (text) => {
+    const entry = Object.entries(MaaN.operatorData.chars).find(([key, value]) => value && (value.name == text || value.name_en == text || value.name_jp == text || value.name_kr == text || value.name_tw == text))
+    return entry ? entry[0] : undefined
+}
+
+MaaN.getOperatorName = (text) => {
+    const entry = Object.entries(MaaN.operatorData.chars).find(([key]) => key == text)
+    return entry ? entry[1].name : undefined
 }
 
 MaaN.setTray = () => {
@@ -915,6 +933,10 @@ MaaN.useCustomLogs = (logData, logLevel) => {
         const logt = logData.split(' ')
         MaaN.log(MaaN.getText('StartCombat') + logt.slice(1).join(' '), logLevel)
         return true
+    } else if (logData.startsWith('CurrentSteps ')) {
+        const logt = logData.split(' ')
+        MaaN.log(MaaN.getText('CurrentSteps', logt.slice(1)), logLevel)
+        return true
     } else if (logData == 'AllTasksCompleted') {
         const text = MaaN.getText('AllTasksComplete', [MaaN.getTimeString(performance.now() - MaaN.lastRunTime)])
         MaaN.log(text, logLevel)
@@ -1067,7 +1089,7 @@ MaaN.startTasks = async (taskName=MaaN.defaultTasks) => {
         return
     }
     if (MaaN.loggedTasks.includes(taskName)) try {
-        await Neutralino.filesystem.remove(NL_CWD + divider + taskName + '.json')
+        await Neutralino.filesystem.remove(NL_PATH + divider + taskName + '.json')
     } catch (error) {
         console.warn(error)
     }
@@ -1183,7 +1205,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
                 MaaN.resetTemporalTasks()
                 switch (MaaN.logMode) {
                     case 'operbox':
-                        Neutralino.filesystem.readFile(NL_CWD + divider + 'operbox.json').then((text) => {
+                        Neutralino.filesystem.readFile(NL_PATH + divider + 'operbox.json').then((text) => {
                             try {
                                 MaaN.updateOperBoxData(JSON.parse(text.split('OperBox: ').slice(-1)[0].split('\n[')[0]))
                             } catch (error) {
@@ -1193,7 +1215,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
                         document.getElementById('ToolboxScreenMainOperBoxRecognitionMessage').textContent = MaaN.getText('IdentificationCompleted')
                         break
                     case 'depot':
-                        Neutralino.filesystem.readFile(NL_CWD + divider + 'depot.json').then((text) => {
+                        Neutralino.filesystem.readFile(NL_PATH + divider + 'depot.json').then((text) => {
                             try {
                                 MaaN.updateDepotData(JSON.parse(text.split('Depot: ').slice(-1)[0].split('\n[')[0]))
                             } catch (error) {
@@ -1251,7 +1273,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
 MaaN.updateOperBoxData = (operBoxData) => {
     if (operBoxData.what != "OperBoxInfo" || !operBoxData.details?.done) return
     if (operBoxData != MaaN.operBoxData) {
-        Neutralino.filesystem.writeFile(NL_CWD + divider + 'operbox.json', JSON.stringify(operBoxData, undefined, 4))
+        Neutralino.filesystem.writeFile(NL_PATH + divider + 'operbox.json', JSON.stringify(operBoxData, undefined, 4))
         MaaN.operBoxData = operBoxData
     }
     document.getElementById('ToolboxScreenMainOperBoxRecognitionNavOperBoxNotHaveList').textContent = MaaN.getText('OperBoxNotHaveList', [operBoxData.details.all_opers.length - operBoxData.details.own_opers.length])
@@ -1289,7 +1311,7 @@ MaaN.updateOperBoxData = (operBoxData) => {
 MaaN.updateDepotData = (depotData) => {
     if (depotData.what != "DepotInfo" || !depotData.details?.done) return
     if (depotData != MaaN.depotData) {
-        Neutralino.filesystem.writeFile(NL_CWD + divider + 'depot.json', JSON.stringify(depotData, undefined, 4))
+        Neutralino.filesystem.writeFile(NL_PATH + divider + 'depot.json', JSON.stringify(depotData, undefined, 4))
         MaaN.depotData = depotData
     }
     const depotList = document.getElementById('ToolboxScreenMainDepotRecognitionResult')
@@ -1347,14 +1369,16 @@ MaaN.updateTitle = () => {
     document.title = title
 }
 
+const divider = NL_OS == 'Windows' ? '\\' : '/'
+
 MaaN.updatePath = async () => {
     const maaTest = await Neutralino.os.execCommand('maa version maa-cli')
     if (maaTest.stdOut) {
         MaaN.cliPath = 'maa '
     }
-    const maaRelativeTest = await Neutralino.os.execCommand('./maa version maa-cli')
+    const maaRelativeTest = await Neutralino.os.execCommand(NL_PATH + divider + 'maa version maa-cli')
     if (maaRelativeTest.stdOut) {
-        MaaN.cliPath = './maa '
+        MaaN.cliPath = NL_PATH + divider + 'maa '
     }
     if (MaaN.cliPath) {
         const maaCoreTest = await Neutralino.os.execCommand(MaaN.cliPath + 'version maa-core')
@@ -1379,6 +1403,7 @@ MaaN.updatePath = async () => {
             } catch (error) {
                 console.warn(error)
             }
+            await MaaN.updateLocaleFromResources()
             return
         }
     } else {
@@ -1395,10 +1420,24 @@ MaaN.updatePath = async () => {
     }
 }
 
-const divider = NL_OS == 'Windows' ? '\\' : '/'
+MaaN.updateLocaleFromResources = async () => {
+    try {
+        const operatorText = await Neutralino.filesystem.readFile(MaaN.paths['resource'] + divider + 'battle_data.json')
+        MaaN.operatorData = JSON.parse(operatorText)
+        Object.entries(MaaN.operatorData.chars).forEach(([key, {name, name_en, name_jp, name_kr, name_tw}]) => {
+            MaaN.localization['zh-cn'][key] = name
+            MaaN.localization['en-us'][key] = name_en
+            MaaN.localization['ja-jp'][key] = name_jp
+            MaaN.localization['ko-kr'][key] = name_kr
+            MaaN.localization['zh-tw'][key] = name_tw
+        })
+    } catch (error) {
+        console.warn(error)
+    }
+}
 
 MaaN.writeConfig = async () => {
-    await Neutralino.filesystem.writeFile(NL_CWD + divider + MaaN.instanceConfigPath, JSON.stringify(MaaN.config, undefined, 4))
+    await Neutralino.filesystem.writeFile(NL_PATH + divider + MaaN.instanceConfigPath, JSON.stringify(MaaN.config, undefined, 4))
 }
 
 MaaN.writeProfile = async (name=MaaN.config.profile) => {
@@ -1428,10 +1467,9 @@ MaaN.loadConfig = async () => {
                 dirConfig = []
             }
         }
-
-        const dirCurrent = await Neutralino.filesystem.readDirectory(NL_CWD)
+        const dirCurrent = await Neutralino.filesystem.readDirectory(NL_PATH)
         if (!dirCurrent.find(({entry}) => entry == MaaN.instanceConfigPath)) await MaaN.writeConfig()
-        const configText = await Neutralino.filesystem.readFile(NL_CWD + divider + MaaN.instanceConfigPath)
+        const configText = await Neutralino.filesystem.readFile(NL_PATH + divider + MaaN.instanceConfigPath)
         MaaN.config = JSON.parse(configText)
         if (!MaaN.config.ui.language) {
             const localeString = NL_LOCALE.toLowerCase()
@@ -1464,14 +1502,14 @@ MaaN.loadConfig = async () => {
         }
 
         if (dirCurrent.find(({entry}) => entry == 'operbox.json')) try {
-            const operBoxText = await Neutralino.filesystem.readFile(NL_CWD + divider + 'operbox.json')
+            const operBoxText = await Neutralino.filesystem.readFile(NL_PATH + divider + 'operbox.json')
             MaaN.operBoxData = JSON.parse(operBoxText)
         } catch (error) {
             console.warn(error)
         }
 
         if (dirCurrent.find(({entry}) => entry == 'depot.json')) try {
-            const depotText = await Neutralino.filesystem.readFile(NL_CWD + divider + 'depot.json')
+            const depotText = await Neutralino.filesystem.readFile(NL_PATH + divider + 'depot.json')
             MaaN.depotData = JSON.parse(depotText)
         } catch (error) {
             console.warn(error)
@@ -1603,7 +1641,7 @@ MaaN.reloadBackground = () => {
         MaaN.background = null
     }
     if (MaaN.config.ui?.background?.image) {
-        Neutralino.filesystem.readBinaryFile(MaaN.config.ui.background.image).then(arrayBuffer => {
+        Neutralino.filesystem.readBinaryFile(NL_OS == 'Windows' ? MaaN.config.ui.background.image.replace(/^"(.*)"$/, (match, p) => p.replace(/\\\\$/, '\\')) : MaaN.config.ui.background.image.replace(/^'(.*)'$/, (match, p) => p.replaceAll("\\'", "'"))).then(arrayBuffer => {
             MaaN.background = URL.createObjectURL(new Blob([arrayBuffer]))
             MaaN.backgroundElement.style.backgroundImage = 'url(' + MaaN.background + ')'
             MaaN.reloadBackgroundStyle()
@@ -1661,10 +1699,27 @@ MaaN.reloadBackgroundStyle = () => {
     }
 }
 
+MaaN.reloadFont = () => {
+    document.body.style.setProperty('--font', MaaN.config.ui?.font)
+}
+
 MaaN.permanentStages = [
-    "1-7",
-    "R8-11",
-    "12-17-HARD"
+    {
+        text: "1-7",
+        value: "1-7"
+    },
+    {
+        text: "R8-11",
+        value: "R8-11"
+    },
+    {
+        text: "12-17-HARD",
+        value: "12-17-HARD"
+    },
+    {
+        name: "AnnihilationMode",
+        value: "Annihilation"
+    }
 ]
 
 MaaN.weeklyStages = [
@@ -1747,7 +1802,7 @@ MaaN.updateOpenStages = async () => {
     const weeklyStages = MaaN.get('config.profile.others.hide_unavailable_stages') ? MaaN.getWeeklyStages() : MaaN.weeklyStages
     const {stdOut} = await Neutralino.os.execCommand(MaaN.cliPath + 'activity ' + client_type)
     const stages = stdOut.split('\n').filter(line => line.startsWith('-')).map(line => line.split(':')[0].slice(2)).concat(MaaN.permanentStages, ...weeklyStages.map(stage => stage.code))
-    MaaN.updateSelects('tasks.farming.Fight.params.stage', [{name: 'DefaultStage', value: undefined}, ...stages.map(stage => ({text: stage, value: stage}))])
+    MaaN.updateSelects('tasks.farming.Fight.params.stage', [{name: 'DefaultStage', value: undefined}, ...stages], 'stage')
     element.textContent = stdOut + MaaN.getText('TodaysStageTip') + '\n' + MaaN.getWeeklyStages().map(stage => MaaN.getText(stage.name)).join('\n')
 }
 
@@ -1881,6 +1936,7 @@ window.addEventListener('load', async () => {
     if (MaaN.titleBar) document.body.append(MaaN.titleBar)
     if (MaaN.resizeAreas) MaaN.resizeAreas.forEach(resizeArea => document.body.append(resizeArea))
     document.body.append(MaaN.backgroundElement)
+    MaaN.reloadFont()
     MaaN.reloadUI()
     MaaN.reloadBackground()
     if (MaaN.get('client_type')) {
