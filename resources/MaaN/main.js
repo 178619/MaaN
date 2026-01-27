@@ -555,6 +555,9 @@ MaaN.roguelikeData = {
             {name: "IS5NewSquad6", value: "花团锦簇分队"},
             {name: "IS5NewSquad7", value: "棋行险着分队"},
             {name: "IS5NewSquad8", value: "岁影回音分队"},
+            {name: "IS5NewSquad9", value: "代理人分队"},
+            {name: "IS5NewSquad10", value: "知学分队"},
+            {name: "IS5NewSquad11", value: "商贾分队"},
             {name: "LeaderSquad", value: "指挥分队"},
             {name: "SupportSquad", value: "后勤分队"},
             {name: "TacticalAssaultOperative", value: "突击战术分队"},
@@ -864,8 +867,8 @@ MaaN.logTable = {
     'MissionFailed': 'FightFailed',
     'StageTraderEnter': 'Trader',
     'StageSafeHouseEnter': 'SafeHouse',
-    'StageCambatDpsEnter': 'CombatDps',
-    'EmergencyDpsEnter': 'EmergencyDps',
+    'StageCambatDpsEnter': 'CombatOps',
+    'EmergencyDpsEnter': 'EmergencyOps',
     'DreadfulFoe': 'DreadfulFoe',
     'TraderInvestSystemFull': 'UpperLimit',
     'RoguelikeGamePass': 'RoguelikeGamePass',
@@ -1190,6 +1193,7 @@ Neutralino.events.on('spawnedProcess', async (event) => {
                 button.textContent = MaaN.getText(button.name)
             })
             MaaN.currentSession = null
+            if (event.detail.data) console.warn('exit code: ' + event.detail.data)
             if (event.detail.data == 2) {
                 MaaN.resetTemporalTasks()
                 if (MaaN.get('config.profile.scripts.on_manual_stop')) switch (MaaN.logMode) {
@@ -1801,7 +1805,13 @@ MaaN.updateOpenStages = async () => {
     if (client_type == 'txwy') client_type = 'Txwy'
     const weeklyStages = MaaN.get('config.profile.others.hide_unavailable_stages') ? MaaN.getWeeklyStages() : MaaN.weeklyStages
     const {stdOut} = await Neutralino.os.execCommand(MaaN.cliPath + 'activity ' + client_type)
-    const stages = stdOut.split('\n').filter(line => line.startsWith('-')).map(line => line.split(':')[0].slice(2)).concat(MaaN.permanentStages, ...weeklyStages.map(stage => stage.code))
+    const stages = stdOut.split('\n').filter(line => line.match(/- [A-Z0-9]{1,2}-\d{1,2}:/)).map(line => {
+        const code = line.match(/- [A-Z0-9]{1,2}-\d{1,2}:/)[0].slice(2, -1)
+        return {
+            text: code,
+            value: code
+        }
+    }).concat(MaaN.permanentStages, ...weeklyStages.map(stage => stage.code))
     MaaN.updateSelects('tasks.farming.Fight.params.stage', [{name: 'DefaultStage', value: undefined}, ...stages], 'stage')
     element.textContent = stdOut + MaaN.getText('TodaysStageTip') + '\n' + MaaN.getWeeklyStages().map(stage => MaaN.getText(stage.name)).join('\n')
 }
@@ -1896,9 +1906,11 @@ MaaN.systemActions = {
             case 'Linux':
                 execution = await Neutralino.os.execCommand('systemctl suspend')
                 break
-            default:
+            case 'FreeBSD':
                 execution = await Neutralino.os.execCommand('acpiconf -s 3')
-
+                break
+            default:
+                break
         }
     },
     'Shutdown': async () => {

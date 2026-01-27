@@ -681,6 +681,7 @@ body #FarmingScreenMainAfterButton:hover, body #FarmingScreenMainAfterButton.sel
     font-size: 87.5%;
     min-height: 5lh;
     max-height: 8lh;
+    line-height: 1lh;
     overflow-y: auto;
     margin: 4px 16px;
 }
